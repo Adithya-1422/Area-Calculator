@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Area Calculator for All Shapes</title>
+  <style>
+    body {
+      background-image: url('https://user-gen-media-assets.s3.amazonaws.com/gpt4o_images/162b10a5-f19a-44fe-8b3d-d523d7824c52.png');
+      background-size: cover;
+      background-position: center center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      min-height: 100vh;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      padding: 0;
+      margin: 0;
+    }
+    .area-container {
+      background: rgba(255,255,255,0.96);
+      border-radius: 20px;
+      max-width: 460px;
+      margin: 60px auto;
+      box-shadow: 0 4px 20px rgba(54,67,184,0.14);
+      padding: 32px 28px 28px 28px;
+      text-align: center;
+    }
+    .area-container h2 {
+      color: #2867bf;
+      font-size: 30px;
+      margin-bottom: 22px;
+    }
+    .area-container select,
+    .area-container input {
+      font-size: 18px;
+      margin: 10px 0;
+      padding: 8px 10px;
+      border-radius: 6px;
+      border: 1.4px solid #2867bf;
+    }
+    .area-container label {
+      font-weight: 600;
+      color: #133870;
+      display: block;
+      margin-bottom: 4px;
+    }
+    .area-container button {
+      width: 100%;
+      font-size: 20px;
+      padding: 10px 0;
+      background: #2867bf;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      box-shadow: 0 2px 7px rgba(52,89,185,0.09);
+      margin-top: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .result {
+      font-size: 22px;
+      color: #e5620b;
+      font-weight: 600;
+      margin-top: 24px;
+      min-height: 32px;
+    }
+    .inputs-group {
+      margin-bottom: 16px;
+    }
+  </style>
+</head>
+<body>
+<div class="area-container">
+  <h2>Area Calculator</h2>
+  <label for="shape">Select Shape</label>
+  <select id="shape" onchange="updateInputs()">
+    <option value="rectangle">Rectangle</option>
+    <option value="square">Square</option>
+    <option value="triangle">Triangle</option>
+    <option value="circle">Circle</option>
+    <option value="parallelogram">Parallelogram</option>
+    <option value="trapezium">Trapezium</option>
+  </select>
+  
+  <form id="area-form" onsubmit="event.preventDefault(); calculateArea();">
+    <div id="inputs"></div>
+    <button type="submit">Calculate Area</button>
+  </form>
+  <div class="result" id="area-result"></div>
+</div>
+
+<script>
+const shapes = {
+  rectangle: [
+    { label: 'Length', id: 'length', type: 'number', min: 0.0001 },
+    { label: 'Breadth', id: 'breadth', type: 'number', min: 0.0001 }
+  ],
+  square: [
+    { label: 'Side', id: 'side', type: 'number', min: 0.0001 }
+  ],
+  triangle: [
+    { label: 'Base', id: 'base', type: 'number', min: 0.0001 },
+    { label: 'Height', id: 'height', type: 'number', min: 0.0001 }
+  ],
+  circle: [
+    { label: 'Radius', id: 'radius', type: 'number', min: 0.0001 }
+  ],
+  parallelogram: [
+    { label: 'Base', id: 'base', type: 'number', min: 0.0001 },
+    { label: 'Height', id: 'height', type: 'number', min: 0.0001 }
+  ],
+  trapezium: [
+    { label: 'Base 1', id: 'base1', type: 'number', min: 0.0001 },
+    { label: 'Base 2', id: 'base2', type: 'number', min: 0.0001 },
+    { label: 'Height', id: 'height', type: 'number', min: 0.0001 }
+  ]
+};
+
+function updateInputs() {
+  const shape = document.getElementById('shape').value;
+  const inputsDiv = document.getElementById('inputs');
+  inputsDiv.innerHTML = '';
+  (shapes[shape] || []).forEach(input => {
+    const groupDiv = document.createElement('div');
+    groupDiv.className = 'inputs-group';
+    groupDiv.innerHTML = `<label for="${input.id}">${input.label}</label>
+        <input type="${input.type}" id="${input.id}" step="any" min="${input.min}" required>`;
+    inputsDiv.appendChild(groupDiv);
+  });
+  document.getElementById('area-result').innerHTML = '';
+}
+window.onload = updateInputs;
+
+function calculateArea() {
+  const shape = document.getElementById('shape').value;
+  let area;
+  try {
+    switch (shape) {
+      case 'rectangle':
+        const length = parseFloat(document.getElementById('length').value);
+        const breadth = parseFloat(document.getElementById('breadth').value);
+        area = length * breadth;
+        break;
+      case 'square':
+        const side = parseFloat(document.getElementById('side').value);
+        area = side * side;
+        break;
+      case 'triangle':
+        const base = parseFloat(document.getElementById('base').value);
+        const height = parseFloat(document.getElementById('height').value);
+        area = 0.5 * base * height;
+        break;
+      case 'circle':
+        const radius = parseFloat(document.getElementById('radius').value);
+        area = Math.PI * radius * radius;
+        break;
+      case 'parallelogram':
+        const pbase = parseFloat(document.getElementById('base').value);
+        const pheight = parseFloat(document.getElementById('height').value);
+        area = pbase * pheight;
+        break;
+      case 'trapezium':
+        const b1 = parseFloat(document.getElementById('base1').value);
+        const b2 = parseFloat(document.getElementById('base2').value);
+        const theight = parseFloat(document.getElementById('height').value);
+        area = 0.5 * (b1 + b2) * theight;
+        break;
+    }
+    if (isNaN(area) || area <= 0) {
+      document.getElementById('area-result').innerHTML = "Please enter all dimensions correctly.";
+      return;
+    }
+    document.getElementById('area-result').innerHTML = "Area = <b>" + area.toFixed(3) + " unit²</b>";
+  } catch {
+    document.getElementById('area-result').innerHTML = "Error in calculation.";
+  }
+}
+</script>
+</body>
+</html>
